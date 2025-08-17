@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Custom Invitation Maker</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f4f4f4;
+      margin: 0;
+      padding: 20px;
+      text-align: center;
+    }
+    h1 {
+      color: #333;
+    }
+    form {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      max-width: 400px;
+      margin: 0 auto 20px;
+    }
+    input, select, textarea, button {
+      margin: 8px 0;
+      padding: 10px;
+      width: 90%;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+    }
+    textarea {
+      resize: none;
+      height: 60px;
+    }
+    button {
+      background: #2196F3;
+      color: white;
+      cursor: pointer;
+      border: none;
+    }
+    button:hover {
+      background: #1976D2;
+    }
+    .card {
+      width: 400px;
+      margin: 20px auto;
+      padding: 20px;
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 8px 15px rgba(0,0,0,0.3);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      background-size: cover;
+      background-position: center;
+      color: #fff;
+      text-shadow: 1px 1px 2px #000;
+      display: none;
+    }
+    .emoji {
+      font-size: 3rem;
+      margin-bottom: 10px;
+    }
+    .message {
+      margin-top: 15px;
+      font-style: italic;
+      font-size: 1.1rem;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🎉 Custom Invitation Maker 🎉</h1>
+
+  <form id="invitationForm">
+    <input type="text" id="hostName" placeholder="Host Name" required>
+    <input type="text" id="eventTitle" placeholder="Event Title" required>
+    <input type="date" id="eventDate" required>
+    <input type="time" id="eventTime" required>
+    <input type="text" id="eventVenue" placeholder="Event Venue" required>
+    <textarea id="eventMessage" placeholder="Custom Message"></textarea>
+    
+    <select id="eventType" required>
+      <option value="birthday">🎂 Birthday</option>
+      <option value="wedding">💍 Wedding</option>
+      <option value="party">🎉 Party</option>
+      <option value="corporate">💼 Corporate</option>
+    </select>
+
+    <p>Upload Background Image:</p>
+    <input type="file" id="bgUpload" accept="image/*">
+    <button type="submit">Generate Invitation</button>
+  </form>
+
+  <div id="invitationCard" class="card">
+    <div class="emoji" id="cardEmoji"></div>
+    <h2 id="cardTitle"></h2>
+    <p id="cardHost"></p>
+    <p id="cardDate"></p>
+    <p id="cardTime"></p>
+    <p id="cardVenue"></p>
+    <p class="message" id="cardMessage"></p>
+  </div>
+
+  <button id="downloadBtn" style="display:none; margin-top:15px;">⬇ Download as PNG</button>
+
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+  <script>
+    const form = document.getElementById('invitationForm');
+    const card = document.getElementById('invitationCard');
+    const cardEmoji = document.getElementById('cardEmoji');
+    const cardTitle = document.getElementById('cardTitle');
+    const cardHost = document.getElementById('cardHost');
+    const cardDate = document.getElementById('cardDate');
+    const cardTime = document.getElementById('cardTime');
+    const cardVenue = document.getElementById('cardVenue');
+    const cardMessage = document.getElementById('cardMessage');
+    const bgUpload = document.getElementById('bgUpload');
+    const downloadBtn = document.getElementById('downloadBtn');
+
+    form.addEventListener('submit', function(e){
+      e.preventDefault();
+
+      let host = document.getElementById('hostName').value;
+      let title = document.getElementById('eventTitle').value;
+      let date = document.getElementById('eventDate').value;
+      let time = document.getElementById('eventTime').value;
+      let venue = document.getElementById('eventVenue').value;
+      let message = document.getElementById('eventMessage').value;
+      let type = document.getElementById('eventType').value;
+
+      // Fill card
+      cardTitle.innerText = title;
+      cardHost.innerText = "👤 Hosted by: " + host;
+      cardDate.innerText = "📅 Date: " + date;
+      cardTime.innerText = "⏰ Time: " + time;
+      cardVenue.innerText = "📍 Venue: " + venue;
+      cardMessage.innerText = message;
+
+      // Emoji
+      let emoji = "🎉";
+      if(type === "birthday") emoji = "🎂 Increseing life spane 🎂";
+      else if(type === "wedding") emoji = "💍 Hands on belive Hand 💍";
+      else if(type === "party") emoji = "🎉 vibee 🎉";
+      else if(type === "corporate") emoji = "💼 ";
+      cardEmoji.innerText = emoji;
+
+      // Background
+      card.style.backgroundImage = "";
+      card.style.backgroundColor = "rgba(0,0,0,0.5)";
+      if(bgUpload.files && bgUpload.files[0]){
+        let reader = new FileReader();
+        reader.onload = function(e){
+          card.style.backgroundImage = `url(${e.target.result})`;
+          card.style.backgroundColor = "transparent";
+        }
+        reader.readAsDataURL(bgUpload.files[0]);
+      }
+
+      card.style.display = "flex";
+      downloadBtn.style.display = "inline-block";
+    });
+
+    // Download card as PNG
+    downloadBtn.addEventListener('click', () => {
+      html2canvas(card).then(canvas => {
+        let link = document.createElement('a');
+        link.download = 'invitation.png';
+        link.href = canvas.toDataURL();
+        link.click();
+      });
+    });
+  </script>
+
+</body>
+</html>
